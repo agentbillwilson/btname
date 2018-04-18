@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
@@ -9,14 +10,14 @@ import (
 )
 
 // NameFromFile decodes the value of the name string from the info dictionary
-// of a BitTorrent metainfo file.
-func NameFromFile(file *os.File) (string, error) {
+// of a BitTorrent metainfo file read from r.
+func NameFromFile(r io.Reader) (string, error) {
 	var metainfo struct {
 		Info struct {
 			Name string `bencode:"name"`
 		} `bencode:"info"`
 	}
-	if err := bencode.NewDecoder(file).Decode(&metainfo); err != nil {
+	if err := bencode.NewDecoder(r).Decode(&metainfo); err != nil {
 		return "", err
 	}
 	return metainfo.Info.Name, nil
